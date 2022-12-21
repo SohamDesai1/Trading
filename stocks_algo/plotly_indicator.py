@@ -10,12 +10,18 @@ adx = df.ta.adx()
 adx_25 = adx[adx['ADX_14'] < 45]
 adx_25 = adx_25.reset_index()
 adx_25 = adx_25.rename(columns={'index': 'Date'})
-print(adx_25)
+# print(adx_25)
 
-concat = pd.concat([df, adx], axis=1)
+rsi = df.ta.rsi()
+print(rsi)
 
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=concat.index, y=concat['Open'], name='Open'))
-fig.add_trace(go.Scatter(x=concat.index, y=concat['Close'], name='Close'))
-fig.add_trace(go.Scatter(x=adx_25['Date'], y=adx_25['ADX_14'], name='ADX_14_25_45'))
+concat = pd.concat([df, rsi], axis=1)
+
+fig = go.Figure() 
+# enlarge candlesticks
+fig.update_layout(margin=dict(l=20, r=20, t=50, b=20), height=600)
+# show candlesticks
+fig.add_trace(go.Candlestick(x=concat.index, open=concat['Open'], high=concat['High'], low=concat['Low'], close=concat['Close'], name='market data'))
+# show rsi 
+fig.add_trace(go.Scatter(x=concat.index, y=concat['RSI_14'], name='RSI_14'))
 fig.show()
