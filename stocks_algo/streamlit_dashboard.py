@@ -19,6 +19,18 @@ goto_today = st.sidebar.button("Go to Today")
 if goto_today:
     end_date = today_date
 
+    # select = st.sidebar.selectbox("Select a indicator",["aberration", "above", "above_value", "accbands", "ad", "adosc", "adx", "alma", "amat", "ao", "aobv", "apo", "aroon", "atr", "bbands","below", "below_value", "bias", "bop", "brar", "cci," "cdl_pattern", "cdl_z", "cfo", "cg", "chop","cksp", "cmf", "cmo", "coppock", "cross", "cross_value", "cti," "decay", "decreasing", "dema", "dm", "donchian", "dpo", "ebsw", "efi", "ema", "entropy", "eom", "er ","eri", "fisher", "fwma", "ha", "hilo", "hl2," "hlc3", "hma," "hwc," "hwma", "ichimoku", "increasing", "inertia", "jma", "kama", "kc", "kdj," "kst," "kurtosis", "kvo," "linreg", "log_return", "long_run," "macd"," mad", "massi", "mcgd", "median", "mfi," "midpoint", "midprice", "mom," "natr", "nvi," "obv," "ohlc4", "pdist", "percent_return", "pgo," "ppo," "psar", "psl," "pvi," "pvo," "pvol", "pvr," "pvt," "pwma", "qqe," "qstick", "quantile", "rma," "roc," "rsi," "rsx," "rvgi", "rvi," "short_run", "sinwma", "skew", "slope", "sma", "smi", "squeeze", "squeeze_pro", "ssf," "stc," "stdev", "stoch", "stochrsi", "supertrend", "swma", "t3, ""td_seq", "tema", "thermo", "tos_stdevall", "trima", "trix", "true_range", "tsi," "tsignals", "ttm_trend", "ui, ""uo, ""variance", "vhf," "vidya", "vortex", "vp, ""vwap", "vwma", "wcp," "willr", "wma," "xsignals", "zlma", "zscore"])
+
+category = st.sidebar.selectbox("Select a category", [
+                                'candles', 'cycles', 'momentum', 'overlap', 'performance', 'statistics', 'trend', 'volatility', 'volume'])
+button_clicked = st.sidebar.button("Get Indicators")
+if button_clicked:
+    df = pd.DataFrame()
+    df = df.ta.ticker(f"{stock}.NS", period="1y", asobject=True)
+    df.ta.strategy(category)
+    df.dropna(inplace=True)
+    st.write(df)
+
 if end_date < start_date:
     st.error("Error: End date must fall after start date.")
 
