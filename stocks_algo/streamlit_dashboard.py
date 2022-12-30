@@ -1,3 +1,4 @@
+from math import floor
 import streamlit as st
 import pandas as pd
 import datetime
@@ -10,6 +11,30 @@ st.title("Stock Price Screener and Analysis")
 pd.set_option('max_colwidth', 400)
 df = pd.DataFrame()
 
+st.header("S&P BSE SENSEX")
+today = datetime.date.today()
+sensex = yf.download("^BSESN",start=today, interval="5m")
+sensex_current = floor(sensex['Close'].iloc[-1])
+st.write(f"Current Price: {sensex_current}")
+fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
+                            0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
+fig.update_xaxes(rangeslider_visible=False)
+fig.add_trace(go.Candlestick(x=sensex.index, open=sensex['Open'], high=sensex['High'],
+                        low=sensex['Low'], close=sensex['Close'], name='market data'), row=1, col=1)
+st.plotly_chart(fig, use_container_width=True)
+
+
+st.header("NIFTY 50")
+nifty = yf.download("^NSEI",start=today, interval="5m")
+nifty_current = floor(nifty['Close'].iloc[-1])
+st.write(f"Current Price: {nifty_current}")
+fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
+                            0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
+fig.update_xaxes(rangeslider_visible=False)
+fig.add_trace(go.Candlestick(x=nifty.index, open=nifty['Open'], high=nifty['High'],
+                        low=nifty['Low'], close=nifty['Close'], name='market data'), row=1, col=1)  
+st.plotly_chart(fig, use_container_width=True)
+
 todays_stock, stocks, indicators = st.tabs(
     ["Stock price for Today ", "Historical Price of Stock", "Indicators"])
 
@@ -21,7 +46,6 @@ with todays_stock:
     if Today_stock:
         start_date = today
         df = yf.download(f"{stock}.NS", start=start_date, interval="2m")
-        # add percentage change column
         df['% Change'] = df['Close'].pct_change()*100
         df['% Change'] = df['% Change'].round(2)
         st.write(df)
@@ -30,7 +54,6 @@ with todays_stock:
         fig.update_xaxes(rangeslider_visible=False)
         fig.add_trace(go.Candlestick(x=df.index, open=df['Open'], high=df['High'],
                       low=df['Low'], close=df['Close'], name='market data'), row=1, col=1)
-        # bar chart
         fig.add_trace(
             go.Bar(x=df.index, y=df['Volume'], name='Volume'), row=2, col=1)
 
@@ -65,7 +88,6 @@ with stocks:
 
         fig.add_trace(go.Candlestick(x=df.index, open=df['Open'], high=df['High'],
                       low=df['Low'], close=df['Close'], name='market data'), row=1, col=1)
-        # bar chart
         fig.add_trace(
             go.Bar(x=df.index, y=df['Volume'], name='Volume'), row=2, col=1)
 
